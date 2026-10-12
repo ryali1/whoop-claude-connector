@@ -175,4 +175,7 @@ app.get("/privacy", (c) =>
 
 app.get("/", (c) => c.html(setupPage(new URL(c.req.url).origin, setupState(c.env))));
 
+// Booleans only, for `npm run status` and coding agents. Never includes secret values or ids.
+app.get("/status.json", (c) => c.json({ service: "whoop-claude-connector", ...setupState(c.env) }));
+
 export { app as WhoopHandler };

@@ -19,7 +19,17 @@ projects and scheduled tasks), and also in Claude Desktop and Claude Code. Setup
 - Node.js 20+ installed
 - A Claude plan that supports custom connectors
 
-## Setup (one command)
+## Setup with a coding agent (easiest)
+Open this folder in Claude Code, Codex, Cursor or any coding agent and say:
+
+> Set up the WHOOP connector in this repo for me by following AGENTS.md.
+
+(In Claude Code you can also type `/setup-whoop`.) The agent runs the commands and checks progress with `npm run status`.
+It tells you exactly what to click in the three places that need you: Cloudflare login, the WHOOP developer form, and
+adding the connector in claude.ai. Your WHOOP secret goes straight from your clipboard to Cloudflare and never appears in
+the chat.
+
+## Setup yourself (one command)
 ```sh
 git clone <this repo> whoop-claude-connector
 cd whoop-claude-connector
@@ -37,6 +47,15 @@ npm run setup
    **WHOOP user id**. Paste it into the setup prompt (or run `npm run set-owner -- <id>`), then click **Connect** again.
 
 Lost? Open your server's address in a browser. Until setup is finished, it shows a checklist with copy buttons for every URL.
+
+Step-by-step commands (what the agent uses; handy if you want to go step by step yourself):
+
+| Command | Does |
+|---|---|
+| `npm run status` | JSON: what's done and the next step (never prints secrets) |
+| `npm run deploy` | Deploy and print the WHOOP form values |
+| `npm run set-secret -- WHOOP_CLIENT_ID` | Store a secret from a hidden prompt, or piped: `pbpaste \| npm run set-secret -- WHOOP_CLIENT_SECRET` |
+| `npm run set-owner -- <id>` | Lock the connector to your WHOOP account |
 
 ## Tools Claude gets (all read-only)
 | Tool | Returns | Max range per call |

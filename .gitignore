@@ -170,3 +170,6 @@ dist
 
 .dev.vars
 .wrangler/
+
+# local setup state (worker name + URL; no secrets)
+.whoop-connector.json

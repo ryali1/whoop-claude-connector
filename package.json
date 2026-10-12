@@ -5,8 +5,10 @@
 	"description": "Self-hosted, read-only connector that lets Claude (claude.ai, Claude Desktop, Claude Code) read your own WHOOP data through the official WHOOP API. Runs on Cloudflare Workers free tier.",
 	"scripts": {
 		"setup": "node scripts/setup.mjs",
+		"status": "node scripts/status.mjs",
+		"deploy": "node scripts/deploy.mjs",
+		"set-secret": "node scripts/set-secret.mjs",
 		"set-owner": "node scripts/set-owner.mjs",
-		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
 		"test": "vitest run",
 		"type-check": "tsc --noEmit",
