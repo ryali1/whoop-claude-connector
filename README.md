@@ -31,7 +31,7 @@ the chat.
 
 ## Setup yourself (one command)
 ```sh
-git clone <this repo> whoop-claude-connector
+git clone https://github.com/ryali1/whoop-claude-connector.git
 cd whoop-claude-connector
 npm install --ignore-scripts
 npm run setup
