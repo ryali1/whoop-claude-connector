@@ -1,0 +1,35 @@
+{
+	"name": "whoop-claude-connector",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Self-hosted, read-only connector that lets Claude (claude.ai, Claude Desktop, Claude Code) read your own WHOOP data through the official WHOOP API. Runs on Cloudflare Workers free tier.",
+	"scripts": {
+		"setup": "node scripts/setup.mjs",
+		"set-owner": "node scripts/set-owner.mjs",
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"test": "vitest run",
+		"type-check": "tsc --noEmit",
+		"cf-typegen": "wrangler types"
+	},
+	"dependencies": {
+		"@cloudflare/workers-oauth-provider": "0.8.1",
+		"@modelcontextprotocol/sdk": "1.31.0",
+		"agents": "0.17.1",
+		"hono": "^4.12.27",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "4.20260628.1",
+		"typescript": "6.0.3",
+		"vitest": "^3.2.4",
+		"wrangler": "4.105.0"
+	},
+	"overrides": {
+		"@modelcontextprotocol/sdk": "1.31.0"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": ">=20"
+	}
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "whoop-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-10",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Secrets (never in this file), set by `npm run setup` or the Cloudflare dashboard:
+  //   WHOOP_CLIENT_ID, WHOOP_CLIENT_SECRET, OWNER_WHOOP_USER_ID
+  //   COOKIE_ENCRYPTION_KEY is optional (auto-generated and kept in KV if unset).
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["WhoopMCP", "WhoopTokenStore"] }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "MCP_OBJECT", "class_name": "WhoopMCP" },
+      { "name": "WHOOP_TOKENS", "class_name": "WhoopTokenStore" }
+    ]
+  },
+  // No id: Wrangler creates the namespace on first deploy.
+  "kv_namespaces": [{ "binding": "OAUTH_KV" }],
+  "observability": { "enabled": true },
+  "dev": { "port": 8788 }
+}
