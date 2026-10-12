@@ -17,6 +17,7 @@ export const LOGIN_SCOPES = [
 ];
 
 export const bold = (s) => `\x1b[1m${s}\x1b[0m`;
+export const LOGIN_COMMAND = `npx wrangler login --scopes ${LOGIN_SCOPES.join(" ")}`;
 
 export function readState() {
 	try {
@@ -102,6 +103,38 @@ export async function readStdin() {
 	let data = "";
 	for await (const chunk of process.stdin) data += chunk;
 	return data.trim();
+}
+
+/** Reads the Worker's /status.json (booleans only). Returns null when unreachable. */
+export async function serverStatus(url) {
+	try {
+		const res = await fetch(`${url}/status.json`, { headers: { "cache-control": "no-cache" } });
+		return res.ok ? await res.json() : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Polls /status.json until `ok(status)` holds for `stable` consecutive reads. New deploys and secrets
+ * take a few seconds to reach every Cloudflare location, and different requests can see different versions.
+ */
+export async function waitForServer(url, ok, { stable = 4, timeoutMs = 120_000, label = "the server" } = {}) {
+	const start = Date.now();
+	let streak = 0;
+	process.stdout.write(`Waiting for ${label}`);
+	while (Date.now() - start < timeoutMs) {
+		const s = await serverStatus(url);
+		streak = s && ok(s) ? streak + 1 : 0;
+		if (streak >= stable) {
+			process.stdout.write(" ready.\n");
+			return true;
+		}
+		process.stdout.write(".");
+		await new Promise((r) => setTimeout(r, 2000));
+	}
+	process.stdout.write(" timed out (it may still finish; run `npm run status`).\n");
+	return false;
 }
 
 export function whoopFormValues(url) {

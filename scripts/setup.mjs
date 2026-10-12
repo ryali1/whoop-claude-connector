@@ -2,7 +2,7 @@
 // `npm run setup`: guided, interactive setup for humans. Safe to re-run; finished steps are skipped.
 // Coding agents: use `npm run status` (JSON) and the step scripts instead; see AGENTS.md.
 
-import { ask, bold, deploy, isLoggedIn, login, putSecret, secretNames, whoopFormValues } from "./lib.mjs";
+import { ask, bold, deploy, isLoggedIn, login, putSecret, secretNames, waitForServer, whoopFormValues } from "./lib.mjs";
 
 const step = (n, s) => console.log(`\n${bold(`${n}.`)} ${bold(s)}`);
 
@@ -24,6 +24,7 @@ async function main() {
 
 	step(2, "Deploy the Worker");
 	const url = await deploy();
+	await waitForServer(url, () => true, { stable: 2, label: "the Worker to come online" });
 
 	const secrets = secretNames();
 	step(3, "WHOOP developer app");
@@ -40,7 +41,7 @@ async function main() {
 		if (!id || !secret) throw new Error("Both values are required; re-run `npm run setup` when you have them");
 		await putSecret("WHOOP_CLIENT_ID", id);
 		await putSecret("WHOOP_CLIENT_SECRET", secret);
-		console.log("Saved as Worker secrets. (Cloudflare can take ~30 seconds to apply new secrets everywhere.)");
+		await waitForServer(url, (s) => s.clientConfigured, { label: "Cloudflare to apply the credentials" });
 	}
 
 	step(4, "Connect Claude");
@@ -55,7 +56,8 @@ async function main() {
 	if (!owner) return console.log("\nWhen you have it: npm run set-owner -- <id>, then click Connect again in Claude.");
 	if (!/^\d+$/.test(owner)) throw new Error("A WHOOP user id is digits only");
 	await putSecret("OWNER_WHOOP_USER_ID", owner);
-	console.log(`\n${bold("Done.")} Wait ~30 seconds, then click Connect again in Claude.`);
+	await waitForServer(url, (s) => s.ownerConfigured, { label: "Cloudflare to apply the owner" });
+	console.log(`\n${bold("Done.")} Click Connect again in Claude.`);
 	console.log('Then try: "Summarize my WHOOP recovery and sleep for the last 7 days."');
 }
 

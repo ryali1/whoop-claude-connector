@@ -16,7 +16,7 @@ projects and scheduled tasks), and also in Claude Desktop and Claude Code. Setup
 ## What you need
 - A WHOOP membership
 - A free Cloudflare account (https://dash.cloudflare.com/sign-up)
-- Node.js 20+ installed
+- Node.js 22+ installed (22.18+ / 24.11+ avoids install warnings)
 - A Claude plan that supports custom connectors
 
 ## Setup with a coding agent (easiest)
@@ -107,8 +107,9 @@ heart-rate streams. For lab results, download the PDF from the WHOOP app and add
 Live logs: `npx wrangler tail`.
 
 ## Uninstall
-claude.ai → Connectors → WHOOP → Remove · WHOOP app → Connected apps → remove · `npx wrangler delete` · delete the app in the
-WHOOP developer dashboard.
+claude.ai → Connectors → WHOOP → Remove · `npx wrangler delete` · `npx wrangler kv namespace list`, then delete the
+`whoop-mcp-oauth-kv` namespace (`npx wrangler kv namespace delete --namespace-id <id>`) · delete the app in the WHOOP
+developer dashboard.
 
 ## Develop
 ```sh
@@ -119,6 +120,8 @@ cp .dev.vars.example .dev.vars && npm run dev   # local server on :8788
 ```
 Built on Cloudflare's `agents` + `@cloudflare/workers-oauth-provider` remote-MCP pattern. `@modelcontextprotocol/sdk` is
 pinned to 1.31.0 via `overrides` (GHSA-6qxp-vccf-f47h).
+The deployed Worker's dependencies audit clean (`npm audit --omit=dev`). The remaining `npm audit` advisories are in local dev
+tooling (Wrangler's local simulator), which never ships. Don't run `npm audit fix --force`.
 
 ## License
 MIT. See [LICENSE](LICENSE). `src/workers-oauth-utils.ts` is adapted from Cloudflare's MIT-licensed

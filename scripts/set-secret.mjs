@@ -3,7 +3,7 @@
 //   Interactive:  npm run set-secret -- WHOOP_CLIENT_SECRET          (hidden prompt)
 //   Piped:        pbpaste | npm run set-secret -- WHOOP_CLIENT_ID    (value from stdin)
 
-import { ask, putSecret, readStdin, SECRET_NAMES } from "./lib.mjs";
+import { ask, putSecret, readState, readStdin, SECRET_NAMES, secretNames, waitForServer } from "./lib.mjs";
 
 const name = process.argv[2];
 if (!SECRET_NAMES.includes(name)) {
@@ -21,7 +21,12 @@ if (/\s/.test(value)) {
 }
 try {
 	await putSecret(name, value);
-	console.log(`Saved ${name} (${value.length} characters). Cloudflare applies new secrets within ~30 seconds.`);
+	console.log(`Saved ${name} (${value.length} characters).`);
+	const { url } = readState();
+	const names = secretNames();
+	if (url && names.has("WHOOP_CLIENT_ID") && names.has("WHOOP_CLIENT_SECRET"))
+		await waitForServer(url, (s) => s.clientConfigured, { label: "Cloudflare to apply the WHOOP credentials" });
+	if (url && name === "OWNER_WHOOP_USER_ID") await waitForServer(url, (s) => s.ownerConfigured, { label: "Cloudflare to apply the owner" });
 } catch (e) {
 	console.error(`✘ ${e.message}`);
 	process.exit(1);
